@@ -1,26 +1,36 @@
 <script setup lang="ts">
 import { fetchGameDetails } from '~/api/bgg';
 import type { BoardGameDetails } from '~/types/bgg';
+import { computed } from 'vue'; // Import computed
 
 const route = useRoute();
-const gameId = route.params.id as string;
+// Use a computed property for gameId to ensure reactivity
+const gameId = computed(() => route.params.id as string);
 
 const { data: game, pending, error, refresh } = useAsyncData<BoardGameDetails>(
-  `game-${gameId}`,
-  () => fetchGameDetails(gameId),
+  // Use a static key or a key that doesn't depend on the potentially initial undefined value
+  'gameDetails', // Static key for useAsyncData
+  async () => {
+    // Only fetch if gameId.value is defined
+    if (gameId.value) {
+      return fetchGameDetails(gameId.value);
+    }
+    // Return null if gameId is not defined yet
+    return null;
+  },
   {
-    // Set immediate to true to fetch data on component load
-    immediate: true,
+    lazy: true, // Fetch data lazily, will be triggered by watch
     // Transform the data if needed, or handle errors
     transform: (data) => {
       // If data is null or undefined, it means the fetch failed or returned no item
-      if (!data) {
-        throw new Error(`Game with ID ${gameId} not found or failed to load.`);
+      // Only throw an error if gameId was actually defined when the fetcher ran
+      if (!data && gameId.value) {
+        throw new Error(`Game with ID ${gameId.value} not found or failed to load.`);
       }
       return data;
     },
-    // Watch for changes in gameId if the route parameter could change without full page reload
-    watch: [() => route.params.id],
+    // Watch for changes in the computed gameId ref to trigger the fetch
+    watch: [gameId],
   }
 );
 
@@ -31,6 +41,10 @@ useHead({
 
 // Function to strip HTML tags from description
 const stripHtml = (html: string) => {
+  // Ensure html is a string before parsing
+  if (typeof html !== 'string') {
+    return '';
+  }
   const doc = new DOMParser().parseFromString(html, 'text/html');
   return doc.body.textContent || '';
 };
