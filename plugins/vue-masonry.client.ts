@@ -1,6 +1,6 @@
 // plugins/vue-masonry.client.ts
-import Masonry from 'vue-masonry-css';
+import MasonryWall from '@yeger/vue-masonry-wall'; // Corrected import path
 
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.component('masonry', Masonry);
+  nuxtApp.vueApp.component('MasonryWall', MasonryWall); // Register with its new name
 });
