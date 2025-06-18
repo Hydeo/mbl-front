@@ -48,18 +48,28 @@ export async function fetchUserCollection(
     // Now that we've checked for errors, we can safely cast to the expected type
     const collectionData: BggCollectionResponse = parsedData;
 
-    // Check if items exist and if there are any items listed
-    if (!collectionData.items || !collectionData.items.item) {
-      // Handle cases where the user has no collection or API returns empty items
-      if (collectionData.items && collectionData.items._attributes && collectionData.items._attributes.totalitems === '0') {
-        return []; // No items in collection
-      }
-      // If items or items.item is missing and totalitems is not 0, something is wrong
-      throw new Error('Invalid collection data structure received from BGG API.');
+    // Check if the main 'items' element exists
+    if (!collectionData.items || !collectionData.items._attributes) {
+       throw new Error('Invalid collection data structure: Missing items element or attributes.');
     }
 
+    const totalItems = parseInt(collectionData.items._attributes.totalitems, 10);
+
+    // Handle cases where the user has no collection (totalitems is 0)
+    if (totalItems === 0) {
+      return []; // No items in collection
+    }
+
+    // If totalitems > 0, we expect 'item' to be present.
     // Ensure item is always treated as an array, even if the API returned a single item object
-    const itemsArray = Array.isArray(parsedData.items.item) ? parsedData.items.item : [parsedData.items.item];
+    // Use collectionData consistently
+    const itemsArray = Array.isArray(collectionData.items.item) ? collectionData.items.item : [collectionData.items.item];
+
+    // If totalItems > 0 but itemsArray is empty after attempting to get items, something is wrong
+    if (totalItems > 0 && (!itemsArray || itemsArray.length === 0)) {
+         throw new Error('Invalid collection data structure: Expected items but none found.');
+    }
+
 
     // Now map over the itemsArray
     return itemsArray.map(item => ({
