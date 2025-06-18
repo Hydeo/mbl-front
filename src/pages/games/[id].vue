@@ -45,8 +45,14 @@ const stripHtml = (html: string) => {
   if (typeof html !== 'string') {
     return '';
   }
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  return doc.body.textContent || '';
+  // Use DOMParser only on the client side
+  if (process.client) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || '';
+  }
+  // On the server, return the raw HTML or an empty string.
+  // Returning an empty string prevents rendering potentially unstyled HTML during SSR.
+  return '';
 };
 </script>
 

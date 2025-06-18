@@ -7,7 +7,23 @@ import type { BggCollectionItem, BggThingItem, BoardGameDetails } from '~/types/
  * @param xmlString The XML string to parse.
  * @returns The parsed JavaScript object.
  */
+/**
+ * Parses a BGG XML string into a JavaScript object.
+ * This parser relies on browser-specific DOMParser.
+ * @param xmlString The XML string to parse.
+ * @returns The parsed JavaScript object.
+ * @throws Error if called outside of a browser environment.
+ */
 export function parseBggXml(xmlString: string): any {
+  // Ensure this function only runs on the client side
+  if (process.server) {
+    // On the server, we cannot use DOMParser.
+    // Throw an error to indicate that this function is client-only.
+    console.error('parseBggXml called on server, but DOMParser is not available.');
+    throw new Error('DOMParser is not available on the server. XML parsing must happen on the client.');
+  }
+
+  // This code only runs on the client
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(xmlString, "application/xml");
 
