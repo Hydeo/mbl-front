@@ -56,13 +56,18 @@ const fetchCollection = () => {
       Loading collection...
     </div>
 
-    <div v-else-if="boardGamesStore.getBoardGames.length > 0" class="game-grid">
+    <!-- Use the masonry component for the grid layout -->
+    <masonry
+      v-else-if="boardGamesStore.getBoardGames.length > 0"
+      :cols="{ default: 4, 1000: 3, 700: 2, 500: 1 }"
+      :gutter="20"
+    >
       <BoardGameCard
         v-for="game in boardGamesStore.getBoardGames"
         :key="game.id"
         :game="game"
       />
-    </div>
+    </masonry>
 
     <div v-else-if="!pending && !boardGamesStore.getBoardGames.length && username" class="no-results">
       No games found for "{{ username }}" or collection is empty.
@@ -136,10 +141,5 @@ h1 {
   margin-top: 30px;
 }
 
-.game-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
-}
+/* Removed .game-grid as masonry handles the layout */
 </style>
