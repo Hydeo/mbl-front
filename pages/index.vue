@@ -16,8 +16,6 @@ const { pending, error, refresh } = useAsyncData(
     }
   },
   {
-    // Watch the username ref to re-fetch when it changes
-    watch: [username],
     // Do not execute immediately on server if username is empty
     immediate: false,
   }
