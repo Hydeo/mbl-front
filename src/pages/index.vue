@@ -21,7 +21,6 @@ const { error, refresh } = useAsyncData(
       }
       return data;
     },
-    watch: [() => boardGamesStore.error],
   }
 );
 

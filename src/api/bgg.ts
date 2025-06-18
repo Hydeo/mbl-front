@@ -37,15 +37,21 @@ export async function fetchUserCollection(
 
     const parsedData: BggCollectionResponse = parseBggXml(response.data);
 
-    if (!parsedData.items || !Array.isArray(parsedData.items.item)) {
+    // Check if items exist and if there are any items listed
+    if (!parsedData.items || !parsedData.items.item) {
       // Handle cases where the user has no collection or API returns empty items
       if (parsedData.items && parsedData.items._attributes && parsedData.items._attributes.totalitems === '0') {
         return []; // No items in collection
       }
-      throw new Error('Invalid collection data received from BGG API.');
+      // If items or items.item is missing and totalitems is not 0, something is wrong
+      throw new Error('Invalid collection data structure received from BGG API.');
     }
 
-    return parsedData.items.item.map(item => ({
+    // Ensure item is always treated as an array, even if the API returned a single item object
+    const itemsArray = Array.isArray(parsedData.items.item) ? parsedData.items.item : [parsedData.items.item];
+
+    // Now map over the itemsArray
+    return itemsArray.map(item => ({
       id: item.objectid,
       name: item.name._text,
       yearPublished: item.yearpublished ? item.yearpublished._text : 'N/A',
