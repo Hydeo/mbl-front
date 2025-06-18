@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useBoardGamesStore } from '~/stores/boardGames';
-import BoardGameCard from '~/components/BoardGameCard.vue'; // Re-enabled import
+import BoardGamePreview from '~/components/BoardGamePreview.vue'; // Updated import to BoardGamePreview
 
 const boardGamesStore = useBoardGamesStore();
 const username = ref('hideosensei');
@@ -78,7 +78,7 @@ const fetchCollection = () => {
             :gap="20"
           >
             <template #default="{ item }">
-              <BoardGameCard :game="item" />
+              <BoardGamePreview :game="item" /> <!-- Changed to BoardGamePreview -->
             </template>
           </MasonryWall>
           <div v-else class="no-results">
