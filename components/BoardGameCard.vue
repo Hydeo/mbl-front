@@ -1,15 +1,15 @@
 <!-- components/BoardGameCard.vue -->
 <script setup lang="ts">
 import type { BoardGame } from '~/types/bgg';
-import { onMounted } from 'vue'; // Import onMounted
+// Removed: import { onMounted } from 'vue'; // Removed debugging import
 
 const props = defineProps<{
   game: BoardGame;
 }>();
 
-onMounted(() => {
-  console.log(`BoardGameCard mounted: ${props.game.name}`);
-});
+// Removed: onMounted(() => {
+// Removed:   console.log(`BoardGameCard mounted: ${props.game.name}`);
+// Removed: });
 </script>
 
 <template>
