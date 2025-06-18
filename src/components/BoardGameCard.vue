@@ -1,3 +1,4 @@
+<!-- src/components/BoardGameCard.vue -->
 <script setup lang="ts">
 import type { BoardGame } from '~/types/bgg'; // Import the BoardGame interface
 
@@ -8,17 +9,27 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="board-game-card">
-    <img :src="props.game.imageUrl || props.game.thumbnailUrl" :alt="props.game.name" class="game-image" loading="lazy" />
-    <div class="game-info">
-      <h3 class="game-name">{{ props.game.name }}</h3>
-      <p class="game-year">Published: {{ props.game.yearPublished }}</p>
-      <p v-if="props.game.numPlays > 0" class="game-plays">Plays: {{ props.game.numPlays }}</p>
+  <!-- Wrap the card in NuxtLink to navigate to the detail page -->
+  <NuxtLink :to="`/games/${props.game.id}`" class="board-game-card-link">
+    <div class="board-game-card">
+      <img :src="props.game.imageUrl || props.game.thumbnailUrl" :alt="props.game.name" class="game-image" loading="lazy" />
+      <div class="game-info">
+        <h3 class="game-name">{{ props.game.name }}</h3>
+        <p class="game-year">Published: {{ props.game.yearPublished }}</p>
+        <p v-if="props.game.numPlays > 0" class="game-plays">Plays: {{ props.game.numPlays }}</p>
+      </div>
     </div>
-  </div>
+  </NuxtLink>
 </template>
 
 <style scoped>
+.board-game-card-link {
+  text-decoration: none; /* Remove underline from link */
+  color: inherit; /* Inherit text color */
+  display: block; /* Make the link fill the card area */
+  height: 100%; /* Ensure the link takes full height of the card */
+}
+
 .board-game-card {
   background-color: #ffffff;
   border-radius: 8px;
@@ -29,6 +40,12 @@ const props = defineProps<{
   display: flex;
   flex-direction: column;
   height: auto; /* Allow height to vary */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth transition for hover effects */
+}
+
+.board-game-card:hover {
+  transform: translateY(-5px); /* Slight lift effect on hover */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
 }
 
 .game-image {
