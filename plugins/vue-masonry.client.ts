@@ -1,6 +1,6 @@
 // plugins/vue-masonry.client.ts
-import  VueMasonryPlugin  from 'vue-masonry-css';
+import Masonry from 'vue-masonry-css';
 
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.use(VueMasonryPlugin);
+  nuxtApp.vueApp.component('masonry', Masonry);
 });
