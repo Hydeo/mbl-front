@@ -14,9 +14,9 @@ const props = defineProps<{
   <NuxtLink :to="`/games/${props.game.id}`" class="board-game-card-link">
     <div class="board-game-card">
       <!-- Add a check before rendering the image -->
+      <!-- Always render img tag, use placeholder if no BGG image URL is available -->
       <img
-        v-if="props.game.imageUrl || props.game.thumbnailUrl"
-        :src="props.game.imageUrl || props.game.thumbnailUrl"
+        :src="props.game.imageUrl || props.game.thumbnailUrl || '/assets/placeholder.png'"
         :alt="props.game.name"
         class="game-image"
         loading="lazy"
