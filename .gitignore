@@ -1,3 +1,29 @@
-.aider*
+# Nuxt.js
+.nuxt/
+.output/
+.nitro/
+.cache/
+.data/
+
+# Dependencies
+node_modules/
+
+# Environment variables
 .env
-node_modules/*
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# IDEs and other tools
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+coverage/
