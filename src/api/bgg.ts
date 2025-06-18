@@ -1,6 +1,6 @@
 // src/api/bgg.ts
 import axios from 'axios';
-import { parseBggXml, parseBggThingXml } from '~/xmlParser'; // Corrected import path
+import { parseBggXml, parseBggThingXml } from '~/utils/xmlParser'; // Corrected import path
 import type { BggCollectionResponse, BoardGame, BggThingResponse, BoardGameDetails } from '~/types/bgg';
 
 const BGG_API_BASE_URL = 'https://boardgamegeek.com/xmlapi2';
