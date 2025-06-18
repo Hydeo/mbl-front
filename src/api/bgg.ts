@@ -35,12 +35,23 @@ export async function fetchUserCollection(
       }
     }
 
-    const parsedData: BggCollectionResponse = parseBggXml(response.data);
+    const parsedData: any = parseBggXml(response.data); // Use 'any' temporarily to check for 'errors'
+
+    // Check for API errors returned in the XML (e.g., invalid username)
+    if (parsedData.errors && parsedData.errors.error) {
+        const errorMessage = Array.isArray(parsedData.errors.error)
+            ? parsedData.errors.error.map((e: any) => e._text).join(', ')
+            : parsedData.errors.error._text;
+        throw new Error(`BGG API Error: ${errorMessage}`);
+    }
+
+    // Now that we've checked for errors, we can safely cast to the expected type
+    const collectionData: BggCollectionResponse = parsedData;
 
     // Check if items exist and if there are any items listed
-    if (!parsedData.items || !parsedData.items.item) {
+    if (!collectionData.items || !collectionData.items.item) {
       // Handle cases where the user has no collection or API returns empty items
-      if (parsedData.items && parsedData.items._attributes && parsedData.items._attributes.totalitems === '0') {
+      if (collectionData.items && collectionData.items._attributes && collectionData.items._attributes.totalitems === '0') {
         return []; // No items in collection
       }
       // If items or items.item is missing and totalitems is not 0, something is wrong
