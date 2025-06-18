@@ -75,8 +75,9 @@ export async function fetchUserCollection(
       id: item.objectid,
       name: item.name._text,
       yearPublished: item.yearpublished ? item.yearpublished._text : 'N/A',
-      imageUrl: item.image ? item.image._text : '',
-      thumbnailUrl: item.thumbnail ? item.thumbnail._text : '',
+      // Access image and thumbnail URLs directly as they are parsed as strings
+      imageUrl: item.image || '',
+      thumbnailUrl: item.thumbnail || '',
       numPlays: item.numplays ? parseInt(item.numplays._text, 10) : 0,
     }));
   } catch (error: any) {
