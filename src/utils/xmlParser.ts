@@ -18,47 +18,55 @@ export function parseBggXml(xmlString: string): any {
 
     // Parse attributes
     if (element.hasAttributes()) {
+      obj._attributes = {}; // Store attributes under _attributes key
       for (let i = 0; i < element.attributes.length; i++) {
         const attr = element.attributes[i];
-        obj[attr.name] = attr.value;
+        obj._attributes[attr.name] = attr.value;
       }
+    }
+
+    // Collect text content from direct text nodes
+    let textContent = '';
+    for (let i = 0; i < element.childNodes.length; i++) {
+        const node = element.childNodes[i];
+        if (node.nodeType === Node.TEXT_NODE) {
+            textContent += node.textContent?.trim() || '';
+        }
+    }
+    if (textContent) {
+        obj._text = textContent; // Store text content under _text key
     }
 
     // Parse child elements
     for (let i = 0; i < element.children.length; i++) {
       const child = element.children[i];
       const tagName = child.tagName;
+      const parsedChild = parseElement(child);
 
-      if (child.children.length > 0 || child.hasAttributes()) {
-        // If child has its own children or attributes, parse it as an object
-        const parsedChild = parseElement(child);
-        if (obj[tagName]) {
-          // If tag already exists, convert to array
-          if (!Array.isArray(obj[tagName])) {
-            obj[tagName] = [obj[tagName]];
-          }
-          obj[tagName].push(parsedChild);
-        } else {
-          obj[tagName] = parsedChild;
+      if (obj[tagName]) {
+        // If tag already exists, convert to array
+        if (!Array.isArray(obj[tagName])) {
+          obj[tagName] = [obj[tagName]];
         }
+        obj[tagName].push(parsedChild);
       } else {
-        // If child has only text content, store its text
-        if (obj[tagName]) {
-          // If tag already exists, convert to array
-          if (!Array.isArray(obj[tagName])) {
-            obj[tagName] = [obj[tagName]];
-          }
-          obj[tagName].push({ _text: child.textContent || '' });
-        } else {
-          obj[tagName] = { _text: child.textContent || '' };
-        }
+        obj[tagName] = parsedChild;
       }
     }
 
-    // If element has only text content and no children/attributes (e.g., <name>Some Name</name>)
-    if (element.children.length === 0 && !element.hasAttributes()) {
-      return element.textContent || '';
+    // Special case: if the element has no attributes and no child elements,
+    // its value is just its text content (if any).
+    if (!element.hasAttributes() && element.children.length === 0) {
+        return textContent || null; // Return text or null if empty
     }
+
+    // If the object is empty but there was text content, return the text content
+    // This handles cases like <description>Some text</description> where textContent was captured
+    // but no attributes or children were present to add to obj.
+     if (Object.keys(obj).length === 0 && textContent) {
+         return textContent;
+     }
+
 
     return obj;
   }
