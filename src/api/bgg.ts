@@ -116,15 +116,17 @@ export async function fetchGameDetails(
       }
     }
 
-    const parsedData: BggThingResponse = parseBggXml(response.data);
+    const parsedData: any = parseBggXml(response.data); // Use any to check structure first
 
-    if (!parsedData.items || !parsedData.items.item) {
+    // Check if the parsed data has the expected root structure (<items> element)
+    // and contains the 'item' property for a single item request.
+    if (!parsedData || !parsedData.item) {
       throw new Error('Invalid game details data received from BGG API.');
     }
 
-    // The 'item' can be a single object or an array if multiple IDs were requested.
-    // We expect a single item for a single ID request.
-    const item = Array.isArray(parsedData.items.item) ? parsedData.items.item[0] : parsedData.items.item;
+    // The 'item' should be a single object for a single ID request.
+    // If parseBggXml somehow returned an array for a single item, take the first one.
+    const item = Array.isArray(parsedData.item) ? parsedData.item[0] : parsedData.item;
 
     if (!item) {
       throw new Error(`Game with ID ${gameId} not found.`);
