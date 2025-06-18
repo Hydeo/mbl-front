@@ -45,15 +45,16 @@ export async function fetchUserCollection(
         throw new Error(`BGG API Error: ${errorMessage}`);
     }
 
-    // Now that we've checked for errors, we can safely cast to the expected type
-    const collectionData: BggCollectionResponse = parsedData;
-
-    // Check if the main 'items' element exists
-    if (!collectionData.items || !collectionData.items._attributes) {
-       throw new Error('Invalid collection data structure: Missing items element or attributes.');
+    // Check if the parsed data has the expected root structure (<items> element with attributes)
+    // The parseBggXml function returns the parsed root element directly.
+    if (!parsedData || !parsedData._attributes || typeof parsedData._attributes.totalitems === 'undefined') {
+       throw new Error('Invalid collection data structure: Expected root <items> element with totalitems attribute.');
     }
 
-    const totalItems = parseInt(collectionData.items._attributes.totalitems, 10);
+    // Now we are confident parsedData is the <items> element with attributes
+    const collectionData: BggCollectionResponse = parsedData; // Cast is now safer
+
+    const totalItems = parseInt(collectionData._attributes.totalitems, 10);
 
     // Handle cases where the user has no collection (totalitems is 0)
     if (totalItems === 0) {
@@ -62,14 +63,12 @@ export async function fetchUserCollection(
 
     // If totalitems > 0, we expect 'item' to be present.
     // Ensure item is always treated as an array, even if the API returned a single item object
-    // Use collectionData consistently
-    const itemsArray = Array.isArray(collectionData.items.item) ? collectionData.items.item : [collectionData.items.item];
+    const itemsArray = Array.isArray(collectionData.item) ? collectionData.item : [collectionData.item];
 
-    // If totalItems > 0 but itemsArray is empty after attempting to get items, something is wrong
+    // If totalItems > 0 && itemsArray is empty, it means the 'item' property was missing when totalItems > 0
     if (totalItems > 0 && (!itemsArray || itemsArray.length === 0)) {
-         throw new Error('Invalid collection data structure: Expected items but none found.');
+         throw new Error('Invalid collection data structure: Expected items but none found when totalitems > 0.');
     }
-
 
     // Now map over the itemsArray
     return itemsArray.map(item => ({
