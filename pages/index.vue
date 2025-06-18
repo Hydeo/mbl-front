@@ -70,20 +70,19 @@ const fetchCollection = () => {
         </template>
 
         <div>
-          <!-- Debugging: Check if any content renders based on store length -->
-          <div v-if="boardGamesStore.getBoardGames.length > 0">
-            <p>DEBUG: Games are loaded! Count: {{ boardGamesStore.getBoardGames.length }}</p>
-            <!-- Temporarily replace masonry with a simple flex container to isolate the issue -->
-            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-              <BoardGameCard
-                v-for="game in boardGamesStore.getBoardGames"
-                :key="game.id"
-                :game="game"
-              />
-            </div>
-          </div>
+          <!-- Reintroducing masonry component -->
+          <masonry
+            v-if="boardGamesStore.getBoardGames.length > 0"
+            :cols="{ default: 4, 1000: 3, 700: 2, 500: 1 }"
+            :gutter="20"
+          >
+            <BoardGameCard
+              v-for="game in boardGamesStore.getBoardGames"
+              :key="game.id"
+              :game="game"
+            />
+          </masonry>
           <div v-else class="no-results">
-            DEBUG: No games yet. Has searched: {{ hasSearched }}. Store length: {{ boardGamesStore.getBoardGames.length }}
             {{ hasSearched ? `No games found for "${username}" or collection is empty.` : 'Enter a BoardGameGeek username to view their collection.' }}
           </div>
         </div>
