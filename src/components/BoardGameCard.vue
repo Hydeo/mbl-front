@@ -1,6 +1,7 @@
 <!-- src/components/BoardGameCard.vue -->
 <script setup lang="ts">
-import type { BoardGame } from '~/types/bgg'; // Import the BoardGame interface
+import type { BoardGame } from '~/types/bgg';
+import { NuxtLink } from '#components'; // Explicitly import NuxtLink
 
 // Define props for the component
 const props = defineProps<{
