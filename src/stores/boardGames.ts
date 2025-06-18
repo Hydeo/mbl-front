@@ -1,7 +1,7 @@
 // stores/boardGames.ts
 import { defineStore } from 'pinia';
-import { fetchUserCollection } from '~/utils/api/bgg'; // Updated import path
-import type { BoardGame } from '~/types/bgg'; // Updated import path
+import { fetchUserCollection } from '~/api/bgg'; // Corrected import path
+import type { BoardGame } from '~/types/bgg';
 
 export const useBoardGamesStore = defineStore('boardGames', {
   state: () => ({
