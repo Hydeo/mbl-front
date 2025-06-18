@@ -55,17 +55,23 @@ const fetchCollection = () => {
     </div>
 
     <!-- Use the masonry component for the grid layout -->
-    <masonry
-      v-else-if="boardGamesStore.getBoardGames.length > 0"
-      :cols="{ default: 4, 1000: 3, 700: 2, 500: 1 }"
-      :gutter="20"
-    >
-      <BoardGameCard
-        v-for="game in boardGamesStore.getBoardGames"
-        :key="game.id"
-        :game="game"
-      />
-    </masonry>
+    <!-- Wrap masonry in <ClientOnly> to ensure it only renders on the client side -->
+    <ClientOnly v-else-if="boardGamesStore.getBoardGames.length > 0">
+      <masonry
+        :cols="{ default: 4, 1000: 3, 700: 2, 500: 1 }"
+        :gutter="20"
+      >
+        <BoardGameCard
+          v-for="game in boardGamesStore.getBoardGames"
+          :key="game.id"
+          :game="game"
+        />
+      </masonry>
+      <!-- Optional: Fallback content for SSR if needed -->
+      <template #fallback>
+        <div class="loading-message">Loading layout...</div>
+      </template>
+    </ClientOnly>
 
     <div v-else-if="!pending && !boardGamesStore.getBoardGames.length && username" class="no-results">
       No games found for "{{ username }}" or collection is empty.
