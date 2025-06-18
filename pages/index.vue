@@ -3,7 +3,7 @@ import { useBoardGamesStore } from '~/stores/boardGames';
 import BoardGameCard from '~/components/BoardGameCard.vue';
 
 const boardGamesStore = useBoardGamesStore();
-const username = ref('');
+const username = ref('hideosensei'); // Changed default value to 'hideosensei'
 const hasSearched = ref(false); // New state to track if a search has been attempted
 
 // Use Nuxt's useAsyncData for SSR-friendly data fetching
