@@ -82,29 +82,31 @@ const fetchCollection = () => {
         </template>
 
         <!-- Client-side content, replaces fallback after hydration -->
-        <!-- This content will be rendered and become interactive on the client -->
-        <template v-if="boardGamesStore.getBoardGames.length > 0">
-          <masonry
-            :cols="{ default: 4, 1000: 3, 700: 2, 500: 1 }"
-            :gutter="20"
-          >
-            <BoardGameCard
-              v-for="game in boardGamesStore.getBoardGames"
-              :key="game.id"
-              :game="game"
-            />
-          </masonry>
-        </template>
-        <template v-else-if="hasSearched && !boardGamesStore.getBoardGames.length">
-          <div class="no-results">
-            No games found for "{{ username }}" or collection is empty.
-          </div>
-        </template>
-        <template v-else>
-          <div class="initial-prompt">
-            Enter a BoardGameGeek username to view their collection.
-          </div>
-        </template>
+        <!-- Wrap the conditional content in a single div for consistent rendering -->
+        <div>
+          <template v-if="boardGamesStore.getBoardGames.length > 0">
+            <masonry
+              :cols="{ default: 4, 1000: 3, 700: 2, 500: 1 }"
+              :gutter="20"
+            >
+              <BoardGameCard
+                v-for="game in boardGamesStore.getBoardGames"
+                :key="game.id"
+                :game="game"
+              />
+            </masonry>
+          </template>
+          <template v-else-if="hasSearched && !boardGamesStore.getBoardGames.length">
+            <div class="no-results">
+              No games found for "{{ username }}" or collection is empty.
+            </div>
+          </template>
+          <template v-else>
+            <div class="initial-prompt">
+              Enter a BoardGameGeek username to view their collection.
+            </div>
+          </template>
+        </div>
       </ClientOnly>
     </div>
   </div>
