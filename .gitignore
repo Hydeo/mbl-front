@@ -23,8 +23,10 @@ yarn-error.log*
 .idea/
 .DS_Store
 Thumbs.db
-.aider # Added by aider
 
+#aider
+.aider/
+.aider*
 # Build artifacts
 dist/
 coverage/
