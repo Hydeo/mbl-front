@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useBoardGamesStore } from '~/stores/boardGames';
-import BoardGamePreview from '~/components/BoardGamePreview.vue'; // Updated import path
+import BoardGamePreview from '~/components/BoardGamePreview.vue'; // Corrected import path
 
 const boardGamesStore = useBoardGamesStore();
 const username = ref('hideosensei');

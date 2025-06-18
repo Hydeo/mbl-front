@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { fetchGameDetails } from '~/api/bgg'; // Updated import path
-import type { BoardGameDetails } from '~/types/bgg'; // Updated import path
+import { fetchGameDetails } from '~/api/bgg';
+import type { BoardGameDetails } from '~/types/bgg';
 
 const route = useRoute();
 const gameId = route.params.id as string;
