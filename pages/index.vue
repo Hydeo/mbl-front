@@ -8,7 +8,7 @@ const username = ref(''); // Use ref for reactive input
 
 // Use Nuxt's useAsyncData for SSR-friendly data fetching
 // This will run on the server during SSR and on the client during navigation
-const { pending, error, refresh } = useAsyncData(
+const { error, refresh } = useAsyncData( // Removed 'pending' from destructuring
   'userCollection',
   async () => {
     if (username.value) {
@@ -41,8 +41,8 @@ const fetchCollection = () => {
         @keyup.enter="fetchCollection"
         class="username-input"
       />
-      <button @click="fetchCollection" :disabled="pending || !username" class="fetch-button">
-        {{ pending ? 'Loading...' : 'Load Collection' }}
+      <button @click="fetchCollection" :disabled="boardGamesStore.getIsLoading || !username" class="fetch-button">
+        {{ boardGamesStore.getIsLoading ? 'Loading...' : 'Load Collection' }}
       </button>
     </div>
 
@@ -50,7 +50,7 @@ const fetchCollection = () => {
       Error: {{ error.message || 'Failed to load collection.' }}
     </div>
 
-    <div v-if="pending && !boardGamesStore.getBoardGames.length" class="loading-message">
+    <div v-if="boardGamesStore.getIsLoading && !boardGamesStore.getBoardGames.length" class="loading-message">
       Loading collection...
     </div>
 
@@ -73,7 +73,7 @@ const fetchCollection = () => {
       </template>
     </ClientOnly>
 
-    <div v-else-if="!pending && !boardGamesStore.getBoardGames.length && username" class="no-results">
+    <div v-else-if="!boardGamesStore.getIsLoading && !boardGamesStore.getBoardGames.length && username" class="no-results">
       No games found for "{{ username }}" or collection is empty.
     </div>
   </div>
