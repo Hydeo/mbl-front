@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useBoardGamesStore } from '~/stores/boardGames';
-import BoardGameCard from '~/components/BoardGameCard.vue';
+// import BoardGameCard from '~/components/BoardGameCard.vue'; // Temporarily comment out or remove if not needed for this test
 
 const boardGamesStore = useBoardGamesStore();
 const username = ref('hideosensei');
@@ -76,11 +76,19 @@ const fetchCollection = () => {
             :cols="{ default: 4, 1000: 3, 700: 2, 500: 1 }"
             :gutter="20"
           >
-            <BoardGameCard
-              v-for="game in boardGamesStore.getBoardGames"
-              :key="game.id"
-              :game="game"
-            />
+            <!-- TEMPORARY: Test with simple divs instead of BoardGameCard -->
+            <div style="width: 100px; height: 100px; background-color: red; margin-bottom: 20px;">
+              TEST ITEM 1
+            </div>
+            <div style="width: 100px; height: 150px; background-color: blue; margin-bottom: 20px;">
+              TEST ITEM 2
+            </div>
+            <div style="width: 100px; height: 120px; background-color: green; margin-bottom: 20px;">
+              TEST ITEM 3
+            </div>
+            <div style="width: 100px; height: 80px; background-color: orange; margin-bottom: 20px;">
+              TEST ITEM 4
+            </div>
           </masonry>
           <div v-else class="no-results">
             {{ hasSearched ? `No games found for "${username}" or collection is empty.` : 'Enter a BoardGameGeek username to view their collection.' }}
