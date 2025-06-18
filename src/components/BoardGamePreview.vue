@@ -13,7 +13,14 @@ const props = defineProps<{
   <!-- Wrap the card in NuxtLink to navigate to the detail page -->
   <NuxtLink :to="`/games/${props.game.id}`" class="board-game-card-link">
     <div class="board-game-card">
-      <img :src="props.game.imageUrl || props.game.thumbnailUrl" :alt="props.game.name" class="game-image" loading="lazy" />
+      <!-- Add a check before rendering the image -->
+      <img
+        v-if="props.game.imageUrl || props.game.thumbnailUrl"
+        :src="props.game.imageUrl || props.game.thumbnailUrl"
+        :alt="props.game.name"
+        class="game-image"
+        loading="lazy"
+      />
       <div class="game-info">
         <h3 class="game-name">{{ props.game.name }}</h3>
         <p class="game-year">Published: {{ props.game.yearPublished }}</p>
