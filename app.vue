@@ -1,4 +1,4 @@
-<!-- app.vue -->
+<!-- src/app.vue -->
 <template>
   <div>
     <NuxtLayout>

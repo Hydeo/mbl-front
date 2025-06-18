@@ -2,8 +2,10 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@pinia/nuxt'],
-  // You can add global CSS here if needed
-  css: ['~/assets/main.css'], // Example for global styles
+  // Set srcDir to 'src' to consolidate all application code under this directory
+  srcDir: 'src/',
+  // Update global CSS path to reflect the new src/assets location
+  css: ['~/assets/main.css'],
   // For future proxy:
   // If you were to use a server/api route as a proxy,
   // you might configure runtimeConfig here for API keys or base URLs.
