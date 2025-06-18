@@ -32,7 +32,7 @@ const fetchCollection = () => {
 <template>
   <div class="container">
     <h1>My BoardGameGeek Collection</h1>
-
+    <p>Games in store: {{ boardGamesStore.getBoardGames.length }}</p>       
     <div class="input-section">
       <input
         type="text"
@@ -40,7 +40,7 @@ const fetchCollection = () => {
         placeholder="Enter BGG Username"
         @keyup.enter="fetchCollection"
         class="username-input"
-      />
+      >
       <button @click="fetchCollection" :disabled="boardGamesStore.getIsLoading || !username" class="fetch-button">
         {{ boardGamesStore.getIsLoading ? 'Loading...' : 'Load Collection' }}
       </button>
