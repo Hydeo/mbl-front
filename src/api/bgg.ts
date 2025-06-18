@@ -72,7 +72,8 @@ export async function fetchUserCollection(
 
     // Now map over the itemsArray
     return itemsArray.map(item => ({
-      id: item.objectid,
+      // Access objectid from the _attributes property
+      id: item._attributes.objectid,
       name: item.name._text,
       yearPublished: item.yearpublished ? item.yearpublished._text : 'N/A',
       // Access image and thumbnail URLs directly as they are parsed as strings
