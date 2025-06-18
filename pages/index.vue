@@ -1,14 +1,13 @@
-<!-- pages/index.vue -->
 <script setup lang="ts">
-import { useBoardGamesStore } from '~/stores/boardGames'; // Nuxt auto-imports stores
-import BoardGameCard from '~/components/BoardGameCard.vue'; // Nuxt auto-imports components
+import { useBoardGamesStore } from '~/stores/boardGames';
+import BoardGameCard from '~/components/BoardGameCard.vue';
 
 const boardGamesStore = useBoardGamesStore();
-const username = ref(''); // Use ref for reactive input
+const username = ref('');
+const hasSearched = ref(false); // New state to track if a search has been attempted
 
 // Use Nuxt's useAsyncData for SSR-friendly data fetching
-// This will run on the server during SSR and on the client during navigation
-const { error, refresh } = useAsyncData( // Removed 'pending' from destructuring
+const { error, refresh } = useAsyncData(
   'userCollection',
   async () => {
     if (username.value) {
@@ -16,14 +15,23 @@ const { error, refresh } = useAsyncData( // Removed 'pending' from destructuring
     }
   },
   {
-    // Do not execute immediately on server if username is empty
     immediate: false,
+    // Propagate store error to useAsyncData error
+    transform: (data) => {
+      if (boardGamesStore.error) {
+        throw new Error(boardGamesStore.error);
+      }
+      return data;
+    },
+    // Watch the store's error state to trigger re-evaluation of useAsyncData's error
+    watch: [() => boardGamesStore.error],
   }
 );
 
 // Function to trigger collection load when button is clicked
 const fetchCollection = () => {
   if (username.value) {
+    hasSearched.value = true; // Mark that a search has been attempted
     refresh(); // Re-run the useAsyncData function
   }
 };
@@ -46,35 +54,58 @@ const fetchCollection = () => {
       </button>
     </div>
 
-    <div v-if="error" class="error-message">
-      Error: {{ error.message || 'Failed to load collection.' }}
+    <!-- Display error from useAsyncData or store -->
+    <div v-if="error || boardGamesStore.getError" class="error-message">
+      Error: {{ error?.message || boardGamesStore.getError || 'Failed to load collection.' }}
     </div>
 
-    <div v-if="boardGamesStore.getIsLoading && !boardGamesStore.getBoardGames.length" class="loading-message">
+    <!-- Loading state: Only show if a search has been initiated and data is loading -->
+    <div v-else-if="boardGamesStore.getIsLoading && hasSearched" class="loading-message">
       Loading collection...
     </div>
 
-    <!-- Use the masonry component for the grid layout -->
-    <!-- Wrap masonry in <ClientOnly> to ensure it only renders on the client side -->
-    <ClientOnly v-else-if="boardGamesStore.getBoardGames.length > 0">
-      <masonry
-        :cols="{ default: 4, 1000: 3, 700: 2, 500: 1 }"
-        :gutter="20"
-      >
-        <BoardGameCard
-          v-for="game in boardGamesStore.getBoardGames"
-          :key="game.id"
-          :game="game"
-        />
-      </masonry>
-      <!-- Optional: Fallback content for SSR if needed -->
-      <template #fallback>
-        <div class="loading-message">Loading layout...</div>
-      </template>
-    </ClientOnly>
+    <!-- This div will always be present in the DOM structure, preventing structural mismatches -->
+    <!-- The content inside it will be handled by ClientOnly, ensuring masonry is client-side -->
+    <div v-else>
+      <ClientOnly>
+        <!-- Fallback content for SSR and initial client render before hydration -->
+        <template #fallback>
+          <!-- On SSR, if no search has happened, show initial prompt -->
+          <div v-if="!hasSearched" class="initial-prompt">
+            Enter a BoardGameGeek username to view their collection.
+          </div>
+          <!-- On SSR, if a search happened but no games, show no results (though this state is unlikely on SSR with immediate:false) -->
+          <div v-else-if="hasSearched && !boardGamesStore.getBoardGames.length" class="no-results">
+            No games found for "{{ username }}" or collection is empty.
+          </div>
+          <!-- Otherwise, nothing specific for SSR if data is expected but not loaded -->
+        </template>
 
-    <div v-else-if="!boardGamesStore.getIsLoading && !boardGamesStore.getBoardGames.length && username" class="no-results">
-      No games found for "{{ username }}" or collection is empty.
+        <!-- Client-side content, replaces fallback after hydration -->
+        <!-- This content will be rendered and become interactive on the client -->
+        <template v-if="boardGamesStore.getBoardGames.length > 0">
+          <masonry
+            :cols="{ default: 4, 1000: 3, 700: 2, 500: 1 }"
+            :gutter="20"
+          >
+            <BoardGameCard
+              v-for="game in boardGamesStore.getBoardGames"
+              :key="game.id"
+              :game="game"
+            />
+          </masonry>
+        </template>
+        <template v-else-if="hasSearched && !boardGamesStore.getBoardGames.length">
+          <div class="no-results">
+            No games found for "{{ username }}" or collection is empty.
+          </div>
+        </template>
+        <template v-else>
+          <div class="initial-prompt">
+            Enter a BoardGameGeek username to view their collection.
+          </div>
+        </template>
+      </ClientOnly>
     </div>
   </div>
 </template>
@@ -145,5 +176,10 @@ h1 {
   margin-top: 30px;
 }
 
-/* Removed .game-grid as masonry handles the layout */
+.initial-prompt {
+  font-size: 1.2em;
+  color: #555;
+  margin-top: 30px;
+  text-align: center;
+}
 </style>
