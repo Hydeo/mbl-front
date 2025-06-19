@@ -25,7 +25,7 @@ const props = defineProps<{
         <h3 class="game-name">{{ props.game.name }}</h3>
         <p class="game-year">Published: {{ props.game.yearPublished }}</p>
         <p class="game-meta">Players: {{ props.game.minPlayers }} - {{ props.game.maxPlayers }}</p>
-        <p class="game-meta">Time: {{ props.game.minPlaytime }} - {{ props.game.maxPlaytime }} min</p>
+        <p class="game-meta">Time: {{ props.game.minPlaytime }} min</p>
         <p v-if="props.game.numPlays > 0" class="game-plays">Plays: {{ props.game.numPlays }}</p>
       </div>
     </div>
