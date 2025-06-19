@@ -105,12 +105,14 @@ export function parseBggThingXml(item: BggThingItem): BoardGameDetails {
   const mechanics: { id: string; name: string }[] = [];
   const designers: { id: string; name: string }[] = [];
   const publishers: { id: string; name: string }[] = [];
+  let rating = 0;
+  let recommendedPlayers = 'N/A';
 
   // Helper to handle single or array of links
   const processLinks = (links: any | any[], typeFilter: string, targetArray: { id: string; name: string }[]) => {
     const linkArray = Array.isArray(links) ? links : [links];
     linkArray.forEach((link: any) => {
-      if (link._attributes && link._attributes.type === typeFilter) {
+      if (link?._attributes?.type === typeFilter) {
         targetArray.push({
           id: link._attributes.id,
           name: link._attributes.value,
@@ -129,10 +131,49 @@ export function parseBggThingXml(item: BggThingItem): BoardGameDetails {
   // Handle name: it can be a single object or an array. The primary name has no 'type' attribute.
   let primaryName = '';
   if (Array.isArray(item.name)) {
-    const primary = item.name.find(n => !n._attributes.type); // Find the name without a 'type' attribute
-    primaryName = primary ? primary._attributes.value : item.name[0]?._attributes.value || 'Unknown Game';
-  } else if (item.name && item.name._attributes) {
+    const primary = item.name.find(n => !n._attributes?.type); // Find the name without a 'type' attribute
+    primaryName = primary ? primary._attributes.value : item.name[0]?._attributes?.value || 'Unknown Game';
+  } else if (item.name?._attributes) {
     primaryName = item.name._attributes.value;
+  }
+
+  // Parse statistics if available
+  if (item.statistics?.ratings) {
+    rating = parseFloat(item.statistics.ratings.average?._attributes?.value || '0');
+
+    // Parse suggested_numplayers poll
+    const playerPoll = Array.isArray(item.poll)
+      ? item.poll.find(p => p._attributes?.name === 'suggested_numplayers')
+      : item.poll?._attributes?.name === 'suggested_numplayers' ? item.poll : null;
+
+    if (playerPoll?.results) {
+      const resultsArray = Array.isArray(playerPoll.results) ? playerPoll.results : [playerPoll.results];
+      let bestResult = null;
+      let maxVotes = 0;
+
+      resultsArray.forEach((resultGroup: any) => {
+        // Each 'results' group contains multiple 'result' items for different player counts
+        const resultItems = Array.isArray(resultGroup.result) ? resultGroup.result : [resultGroup.result];
+        resultItems.forEach((result: any) => {
+          if (result?._attributes?.value === 'Best' && result?._attributes?.numvotes) {
+            const numVotes = parseInt(result._attributes.numvotes, 10);
+            if (numVotes > maxVotes) {
+              maxVotes = numVotes;
+              // Find the corresponding numplayers from the parent 'results' group
+              bestResult = resultGroup._attributes?.numplayers;
+            }
+          }
+        });
+      });
+
+      if (bestResult) {
+        recommendedPlayers = `${item.minplayers?._attributes?.value || '?'}-${item.maxplayers?._attributes?.value || '?'} players (Best with ${bestResult})`;
+      } else {
+         recommendedPlayers = `${item.minplayers?._attributes?.value || '?'}-${item.maxplayers?._attributes?.value || '?'} players`;
+      }
+    } else {
+       recommendedPlayers = `${item.minplayers?._attributes?.value || '?'}-${item.maxplayers?._attributes?.value || '?'} players`;
+    }
   }
 
 
@@ -156,7 +197,9 @@ export function parseBggThingXml(item: BggThingItem): BoardGameDetails {
     thumbnailUrl: item.thumbnail || '',
     categories,
     mechanics,
-    designers,
+    designers, // Keep designers/publishers in the parsed object for now, just remove from display
     publishers,
+    rating,
+    recommendedPlayers,
   };
 }

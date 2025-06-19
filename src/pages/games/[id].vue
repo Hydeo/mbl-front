@@ -75,7 +75,8 @@ const stripHtml = (html: string) => {
         <div class="game-header-info">
           <h1 class="game-title">{{ game.name }}</h1>
           <p class="game-meta">Published: {{ game.yearPublished }}</p>
-          <p class="game-meta">Players: {{ game.minPlayers }} - {{ game.maxPlayers }}</p>
+          <p class="game-meta">Rating: {{ game.rating.toFixed(2) }} / 10</p>
+          <p class="game-meta">Recommended Players: {{ game.recommendedPlayers }}</p>
           <p class="game-meta">Playing Time: {{ game.minPlaytime }} - {{ game.maxPlaytime }} min</p>
           <p class="game-meta">Min Age: {{ game.minAge }}+</p>
         </div>
@@ -99,18 +100,7 @@ const stripHtml = (html: string) => {
             <span v-for="mech in game.mechanics" :key="mech.id" class="attribute-tag">{{ mech.name }}</span>
           </div>
         </div>
-        <div v-if="game.designers.length">
-          <h3>Designers</h3>
-          <div class="attribute-list">
-            <span v-for="designer in game.designers" :key="designer.id" class="attribute-tag">{{ designer.name }}</span>
-          </div>
-        </div>
-        <div v-if="game.publishers.length">
-          <h3>Publishers</h3>
-          <div class="attribute-list">
-            <span v-for="publisher in game.publishers" :key="publisher.id" class="attribute-tag">{{ publisher.name }}</span>
-          </div>
-        </div>
+        <!-- Removed Designers and Publishers sections -->
       </div>
     </div>
 

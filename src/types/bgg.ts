@@ -125,5 +125,7 @@ export interface BoardGameDetails {
   mechanics: { id: string; name: string }[];
   designers: { id: string; name: string }[];
   publishers: { id: string; name: string }[];
-  // Add other parsed details as needed (e.g., average rating, weight)
+  rating: number; // Average rating
+  recommendedPlayers: string; // e.g., "2-4 players (Best with 3)"
+  // Add other parsed details as needed (e.g., weight)
 }
