@@ -55,6 +55,10 @@ export interface BoardGame {
   imageUrl: string;
   thumbnailUrl: string;
   numPlays: number;
+  minPlayers: number;
+  maxPlayers: number;
+  minPlaytime: number;
+  maxPlaytime: number;
   // Add other fields if needed from collection API
 }
 
