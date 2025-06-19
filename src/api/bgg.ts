@@ -80,11 +80,11 @@ export async function fetchUserCollection(
       imageUrl: item.image || '',
       thumbnailUrl: item.thumbnail || '',
       numPlays: item.numplays ? parseInt(item.numplays._text, 10) : 0,
-      // Parse player counts and times directly from the item element
-      minPlayers: item.minplayers?._text ? parseInt(item.minplayers._text, 10) : 0,
-      maxPlayers: item.maxplayers?._text ? parseInt(item.maxplayers._text, 10) : 0,
-      minPlaytime: item.minplaytime?._text ? parseInt(item.minplaytime._text, 10) : 0,
-      maxPlaytime: item.maxplaytime?._text ? parseInt(item.maxplaytime._text, 10) : 0,
+      // Parse player counts and times from the attributes of the 'stats' element
+      minPlayers: item.stats?._attributes?.minplayers ? parseInt(item.stats._attributes.minplayers, 10) : 0,
+      maxPlayers: item.stats?._attributes?.maxplayers ? parseInt(item.stats._attributes.maxplayers, 10) : 0,
+      minPlaytime: item.stats?._attributes?.minplaytime ? parseInt(item.stats._attributes.minplaytime, 10) : 0,
+      maxPlaytime: item.stats?._attributes?.maxplaytime ? parseInt(item.stats._attributes.maxplaytime, 10) : 0,
     }));
   } catch (error: any) {
     console.error('Error fetching BGG collection:', error);
